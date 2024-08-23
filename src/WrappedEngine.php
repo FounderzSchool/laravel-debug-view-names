@@ -24,14 +24,21 @@ class WrappedEngine implements Engine
         return $this->comment($path, true) . $value . $this->comment($path, false);
     }
 
-    protected function comment(string $path, bool $start): string
+    /**
+     * Return an HTML comment that indicates the path of the view.
+     *
+     * @param  string  $path
+     * @param  bool  $opening Whether it's the opening comment.
+     * @return string
+     */
+    protected function comment(string $path, bool $opening): string
     {
         $base = $this->base_path . '/';
         if (str_starts_with($path, $base)) {
             $path = substr($path, strlen($base));
         }
 
-        $starting = $start ? 'Starting' : 'Ending';
+        $starting = $opening ? 'Starting' : 'Ending';
         return '<!-- ' . $starting . ' ' . $path . ' -->';
     }
 }
