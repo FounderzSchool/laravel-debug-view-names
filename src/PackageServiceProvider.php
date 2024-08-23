@@ -10,6 +10,7 @@ class PackageServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        /** @var EngineResolver */
         $engine_resolver = $this->app->make('view.engine.resolver');
 
         $base_path = $this->app->basePath();
@@ -22,42 +23,25 @@ class PackageServiceProvider extends ServiceProvider
 
                 public function resolve($engine)
                 {
+                    // We manually re-implement `resolve`, since we want to store
+                    // the wrapped resolved engine, instead of re-wrapping it every time.
+
                     if (isset($this->original->resolved[$engine])) {
                         return $this->original->resolved[$engine];
                     }
 
                     if (isset($this->original->resolvers[$engine])) {
-                        return $this->original->resolved[$engine] = $this->wrap(call_user_func($this->original->resolvers[$engine]));
+                        /** @var Engine */
+                        $resolved_engine = call_user_func($this->original->resolvers[$engine]);
+                        return $this->original->resolved[$engine] = $this->wrap($resolved_engine);
                     }
 
                     throw new \InvalidArgumentException("Engine [{$engine}] not found.");
                 }
 
-                public function wrap($engine)
+                public function wrap(Engine $engine): WrappedEngine
                 {
-                    return new class ($engine, $this->base_path) implements Engine {
-                        public function __construct(private Engine $engine, private string $base_path)
-                        {
-                        }
-
-                        public function get($path, array $data = [])
-                        {
-                            $value = $this->engine->get($path, $data);
-
-                            return $this->comment($path, true) . $value . $this->comment($path, false);
-                        }
-
-                        protected function comment(string $path, bool $start): string
-                        {
-                            $base = $this->base_path . '/';
-                            if (str_starts_with($path, $base)) {
-                                $path = substr($path, strlen($base));
-                            }
-
-                            $starting = $start ? 'Starting' : 'Ending';
-                            return '<!-- ' . $starting . ' ' . $path . ' -->';
-                        }
-                    };
+                    return new WrappedEngine($engine, $this->base_path);
                 }
             };
         });
