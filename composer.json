@@ -1,0 +1,19 @@
+{
+    "name": "founderz/laravel-debug-view-names",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Founderz\\LaravelDebugViewNames\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Annie",
+            "email": "annie@founderz.com"
+        }
+    ],
+    "require": {
+        "illuminate/support": "^11.21",
+        "illuminate/view": "^11.21"
+    }
+}
