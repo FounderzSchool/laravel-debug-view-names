@@ -1,5 +1,7 @@
 {
     "name": "founderz/laravel-debug-view-names",
+    "description": "Add HTML comments to indicate where views start and end",
+    "license": "MIT",
     "type": "library",
     "autoload": {
         "psr-4": {
