@@ -2,6 +2,7 @@
 
 namespace Founderz\LaravelDebugViewNames;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Engines\EngineResolver;
 
@@ -9,6 +10,12 @@ class PackageServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        if (App::environment('local')) {
+            $this->register_engine_resolver();
+        }
+    }
+
+    function register_engine_resolver(): void {
         /** @var EngineResolver */
         $engine_resolver = $this->app->make('view.engine.resolver');
 
