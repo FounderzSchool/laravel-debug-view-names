@@ -15,8 +15,8 @@
         }
     ],
     "require": {
-        "illuminate/support": "^11.21",
-        "illuminate/view": "^11.21"
+        "illuminate/support": "^11.0",
+        "illuminate/view": "^11.0"
     },
     "require-dev": {
         "laravel/pint": "^1.17",
