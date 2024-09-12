@@ -10,7 +10,9 @@ class PackageServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        if (App::environment('local')) {
+        $config = $this->app->make('config');
+
+        if (App::environment($config->get('laravel-debug-view-names.environments')) && $config->get('laravel-debug-view-names.enable')) {
             $this->register_engine_resolver();
         }
     }
@@ -41,5 +43,15 @@ class PackageServiceProvider extends ServiceProvider
         // I'm not sure what implications resetting this has,
         // but it seems to work correctly so far.
         $this->app->instance('view', null);
+    }
+
+    /**
+     * Bootstrap any package services.
+     */
+    public function boot(): void
+    {
+        $this->publishes([
+            __DIR__ . '/../config/laravel-debug-view-names.php' => $this->app->configPath('laravel-debug-view-names.php'),
+        ]);
     }
 }
