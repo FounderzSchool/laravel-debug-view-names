@@ -41,4 +41,16 @@ class WrappedEngine implements Engine
         $starting = $opening ? 'Starting' : 'Ending';
         return '<!-- ' . $starting . ' ' . $path . ' -->';
     }
+
+    /**
+     * Handle dynamic method calls into the engine instance.
+     *
+     * @param  string  $method
+     * @param  array<mixed>  $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return $this->engine->$method(...$parameters);
+    }
 }
