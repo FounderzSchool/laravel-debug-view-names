@@ -10,9 +10,13 @@ class PackageServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        /** @var \Illuminate\Config\Repository $config */
         $config = $this->app->make('config');
 
-        if (App::environment($config->get('laravel-debug-view-names.environments')) && $config->get('laravel-debug-view-names.enable')) {
+        /** @var array<string> $environments */
+        $environments = $config->get('laravel-debug-view-names.environments', ['local']);
+
+        if (App::environment($environments) && $config->get('laravel-debug-view-names.enable')) {
             $this->register_engine_resolver();
         }
     }
