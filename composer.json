@@ -3,6 +3,11 @@
     "description": "Add HTML comments to indicate where views start and end",
     "license": "MIT",
     "type": "library",
+    "keywords": ["laravel", "blade", "views", "debug", "developer-tools"],
+    "support": {
+        "issues": "https://github.com/FounderzSchool/laravel-debug-view-names/issues",
+        "source": "https://github.com/FounderzSchool/laravel-debug-view-names"
+    },
     "autoload": {
         "psr-4": {
             "Founderz\\LaravelDebugViewNames\\": "src/"

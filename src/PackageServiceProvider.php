@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Founderz\LaravelDebugViewNames;
 
 use Illuminate\Support\Facades\App;
@@ -10,6 +12,11 @@ class PackageServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/laravel-debug-view-names.php',
+            'laravel-debug-view-names',
+        );
+
         /** @var \Illuminate\Config\Repository $config */
         $config = $this->app->make('config');
 
@@ -17,45 +24,36 @@ class PackageServiceProvider extends ServiceProvider
         $environments = $config->get('laravel-debug-view-names.environments', ['local']);
 
         if (App::environment($environments) && $config->get('laravel-debug-view-names.enable')) {
-            $this->register_engine_resolver();
+            $this->registerEngineResolver();
         }
     }
 
-    function register_engine_resolver(): void {
+    private function registerEngineResolver(): void
+    {
         /** @var EngineResolver */
-        $engine_resolver = $this->app->make('view.engine.resolver');
+        $engineResolver = $this->app->make('view.engine.resolver');
 
-        $base_path = $this->app->basePath();
+        $basePath = $this->app->basePath();
 
         $this->app->singleton(
             'view.engine.resolver',
-            fn () =>
-            new WrappedEngineResolver($engine_resolver, $base_path)
+            fn () => new WrappedEngineResolver($engineResolver, $basePath),
         );
 
-        // Resetting the view instance, so that next time it's gotten,
-        // it's loaded with our new engine resolver.
-        //
-        // Currently, the `'view'` singleton (a \Illuminate\View\Factory)
-        // is created at the start, and it takes an Engine resolver that
-        // it loads at the start and keeps loaded:
-        // https://github.com/laravel/framework/blob/500f3eb8970ed2a0bf6c31d6db2f02932b46cd12/src/Illuminate/View/ViewServiceProvider.php#L43
-        //
-        // By resetting the `'view'` instance, we force Laravel to re-create it,
-        // which will now use the `'view.engine.resolver'` singleton we defined above.
-        //
-        // I'm not sure what implications resetting this has,
-        // but it seems to work correctly so far.
+        // The `view` singleton (a \Illuminate\View\Factory) is created up-front
+        // by ViewServiceProvider and captures the engine resolver at construction
+        // time, so it has to be dropped from the container for our wrapped
+        // resolver to take effect on the next `make('view')`. `instance(..., null)`
+        // overwrites the cached instance; the next `make('view')` re-resolves
+        // through the `view` binding (which is still registered).
         $this->app->instance('view', null);
     }
 
-    /**
-     * Bootstrap any package services.
-     */
     public function boot(): void
     {
-        $this->publishes([
-            __DIR__ . '/../config/laravel-debug-view-names.php' => $this->app->configPath('laravel-debug-view-names.php'),
-        ]);
+        $this->publishes(
+            [__DIR__ . '/../config/laravel-debug-view-names.php' => $this->app->configPath('laravel-debug-view-names.php')],
+            'laravel-debug-view-names-config',
+        );
     }
 }
