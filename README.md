@@ -48,3 +48,12 @@ You can install this package through composer:
 ```sh
 composer require founderz/laravel-debug-view-names
 ```
+
+## Limitations
+
+The wrapping comments are emitted around every rendered view, including views
+rendered inside `<script>` or `<style>` tags and views used as JSON, XML or
+plain-text responses (e.g. emails, API payloads). HTML comments are not valid
+in those contexts and can break the output. The package only activates in the
+configured environments (default: `local`) precisely so this can't reach
+production — keep that list narrow.

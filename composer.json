@@ -13,6 +13,11 @@
             "Founderz\\LaravelDebugViewNames\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Founderz\\LaravelDebugViewNames\\Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Annie",
@@ -26,7 +31,13 @@
     "require-dev": {
         "laravel/pint": "^1.25",
         "phpstan/phpstan": "^2.1",
-        "illuminate/config": "^12.0 || ^13.0"
+        "illuminate/config": "^12.0 || ^13.0",
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "phpunit/phpunit": "^11.0 || ^12.0"
+    },
+    "scripts": {
+        "test": "phpunit",
+        "phpstan": "phpstan analyse"
     },
     "extra": {
         "laravel": {
